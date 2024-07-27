@@ -6,7 +6,7 @@
 
 ARG SOURCE_IMAGE="base"
 ARG SOURCE_SUFFIX="-main"
-ARG SOURCE_TAG="latest" # 40
+ARG SOURCE_TAG="latest"
 
 FROM ghcr.io/ublue-os/${SOURCE_IMAGE}${SOURCE_SUFFIX}:${SOURCE_TAG}
 
