@@ -53,7 +53,7 @@ MEDIA_PACKAGES=(
     pulseaudio-utils
 )
 
-rpm-ostree install "${COMMON_PACKAGES[@]}" "${CLI_PACKAGES[@]}"
+rpm-ostree install "${COMMON_PACKAGES[@]}" "${CLI_PACKAGES[@]}" "${MEDIA_PACKAGES[@]}"
 
 
 systemctl enable podman.socket
