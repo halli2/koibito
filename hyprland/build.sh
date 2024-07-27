@@ -22,6 +22,9 @@ PACKAGES=(
     thunar-archive-plugin
     thunar-volman
     xarchiver
+
+    lxqt-policykit
+    polkit
 )
 
 rpm-ostree install "${PACKAGES[@]}"
