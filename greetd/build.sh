@@ -8,8 +8,7 @@ cp -r usr /
 
 # Create greeter user
 # I think it *should* work using the greetd user and not doing this, but it doesnt.
-useradd -M -G video greeter
-chmod -R go+r /etc/greetd/
+useradd -M greeter
 
 PACKAGES=(
     greetd

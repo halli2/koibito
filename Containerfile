@@ -57,7 +57,14 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     /tmp/build_base.sh && \
     ostree container commit
 
-
+# TODO: Cleanup in script
+# TODO: Install flatpaks? Or just add a justfile for this?
+COPY system_files/usr /
+RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
+    rpm-ostree override remove \
+        firefox \
+        firefox-langpacks && \
+    ostree container commit
 
 ## NOTES:
 # - All RUN commands must end with ostree container commit
