@@ -17,6 +17,7 @@ RUN mkdir -p /var/lib/alternatives && \
 COPY steam /tmp/steam/
 WORKDIR /tmp/steam/
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
+    ./steam.sh && \
     ./steam_extras.sh && \
     ostree container commit
 
