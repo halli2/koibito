@@ -11,10 +11,17 @@ curl -Lo /etc/yum.repos.d/flekz-staging-fedora-"${RELEASE}".repo https://copr.fe
 # Devpod
 #curl -Lo /etc/yum.repos.d/ublue-os-staging-fedora-"${RELEASE}".repo https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-"${RELEASE}"/ublue-os-staging-fedora-"${RELEASE}".repo
 
-PACKAGES=(
+
+IDE_PACKAGES=(
     rustrover
     jetbrains-gateway
     devpod
 )
 
-rpm-ostree install "${PACKAGES[@]}"
+# Images (Podman, Qemu, Bootc dev)
+IMG_PACKAGES=(
+    qemu
+    qemu-img
+)
+
+rpm-ostree install "${IDE_PACKAGES[@]}" "${IMG_PACKAGES[@]}"

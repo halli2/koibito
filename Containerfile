@@ -97,9 +97,15 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
 
 WORKDIR /
 
-COPY build_scripts/build_dev.sh /tmp/build_dev.sh
+COPY build_scripts/dev_packages.sh /tmp/dev_packages.sh
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
-    /tmp/build_dev.sh && \
+    /tmp/dev_packages.sh && \
+    /usr/libexec/containerbuild/cleanup.sh && \
+    ostree container commit
+
+COPY build_scripts/gamescope.sh /tmp/gamescope.sh
+RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
+    /tmp/gamescope.sh && \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
