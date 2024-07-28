@@ -17,13 +17,14 @@ PACKAGES=(
 
     waybar
     dunst
+    rofi-wayland
 
     thunar
     thunar-archive-plugin
     thunar-volman
     xarchiver
 
-    lxqt-policykit
+    lxpolkit
     polkit
 )
 
