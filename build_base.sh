@@ -25,6 +25,7 @@ COMMON_PACKAGES=(
 CLI_PACKAGES=(
     alacritty
     zsh
+    fish
     eza
     fd-find
     zoxide
