@@ -97,6 +97,9 @@ COMMON_PACKAGES=(
     wf-recorder
     syncthing
     wl-clipboard
+
+    # TODO: Is this better?
+    systemd-networkd
 )
 CLI_PACKAGES=(
     alacritty
@@ -135,6 +138,9 @@ rpm-ostree install "${COMMON_PACKAGES[@]}" "${CLI_PACKAGES[@]}" "${MEDIA_PACKAGE
 
 systemctl enable podman.socket
 
+# TODO: Is this better?
+systemctl disable NetworkManager
+systemctl enable systemd-networkd
 
 ### Remove ublue stuff that is annoying.
 # Dont generate .justfile in home folder, use ujust instead.
