@@ -11,6 +11,8 @@ setup-koibito:
 	brew install zoxide
 	brew install yazi
 	brew install fd
+	brew install podlet
+	brew install tealdeer
 
 # Install firefox from flatpak
 install-firefox:

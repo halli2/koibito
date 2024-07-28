@@ -1,30 +1,76 @@
-## 1. BUILD ARGS
-# These allow changing the produced image by passing different build args to adjust
-# the source from which your image is built.
-# Build args can be provided on the commandline when building locally with:
-#   podman build -f Containerfile --build-arg FEDORA_VERSION=40 -t local-image
+ARG FEDORA_MAJOR_VERSION=40
 
-ARG SOURCE_IMAGE="base"
-ARG SOURCE_SUFFIX="-main"
-ARG SOURCE_TAG="latest"
+FROM ghcr.io/ublue-os/akmods:fsync-${FEDORA_MAJOR_VERSION} AS akmods
+FROM ghcr.io/ublue-os/akmods-extra:fsync-${FEDORA_MAJOR_VERSION} AS akmods-extra
+FROM ghcr.io/ublue-os/fsync-kernel:${FEDORA_MAJOR_VERSION} AS fsync
 
-FROM ghcr.io/ublue-os/${SOURCE_IMAGE}${SOURCE_SUFFIX}:${SOURCE_TAG}
+FROM ghcr.io/ublue-os/base-main:${FEDORA_MAJOR_VERSION} AS koibito
 
-# /var/lib/alternatives is required to prevent failure with some RPM installs
-RUN mkdir -p /var/lib/alternatives && \
+RUN mkdir -p /usr/libexec/containerbuild
+COPY cleanup.sh /usr/libexec/containerbuild/cleanup.sh
+
+# Update packages that commonly cause build issues
+COPY build_scripts/override_packages.sh /tmp/override_packages.sh
+RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
+    /tmp/override_packages.sh && \
+    /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
-COPY steam /tmp/steam/
-WORKDIR /tmp/steam/
+# TODO: Move to where they are used?
+# Setup Copr repos
+COPY build_scripts/coprs.sh /tmp/coprs.sh
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
-    ./steam.sh && \
-    ./steam_extras.sh && \
+    /tmp/coprs.sh && \
+    /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
-COPY jp /tmp/jp/
-WORKDIR /tmp/jp/
+# FSYNC-KERNEL
+COPY build_scripts/fsync.sh /tmp/fsync.sh
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
-    ./build.sh && \
+    --mount=type=bind,from=fsync,src=/tmp/rpms,dst=/tmp/fsync-rpms \
+    /tmp/fsync.sh && \
+    /usr/libexec/containerbuild/cleanup.sh && \
+    ostree container commit
+
+# AKMODS
+COPY build_scripts/akmods.sh /tmp/akmods.sh
+RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
+    --mount=type=bind,from=akmods,src=/rpms,dst=/tmp/akmods-rpms \
+    --mount=type=bind,from=akmods-extra,src=/rpms,dst=/tmp/akmods-extra-rpms \
+    /tmp/akmods.sh && \
+    /usr/libexec/containerbuild/cleanup.sh && \
+    ostree container commit
+
+# TODO: Is it possible to not use all these patches?
+# Install Valve's patched Mesa, Pipewire, Bluez, and Xwayland
+# Install patched switcheroo control with proper discrete GPU support
+COPY build_scripts/patches.sh /tmp/patches.sh
+RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
+    /tmp/patches.sh && \
+    /usr/libexec/containerbuild/cleanup.sh && \
+    ostree container commit
+
+# Install Steam & Lutris, plus supporting packages
+COPY build_scripts/steam.sh /tmp/steam.sh
+RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
+    /tmp/steam.sh && \
+    /usr/libexec/containerbuild/cleanup.sh && \
+    ostree container commit
+
+# Remove unneeded packages
+RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
+    rpm-ostree override remove \
+        ublue-os-update-services \
+        firefox \
+        firefox-langpacks && \
+    /usr/libexec/containerbuild/cleanup.sh && \
+    ostree container commit
+
+# Install packages
+COPY build_scripts/koibito.sh /tmp/koibito.sh
+RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
+    /tmp/koibito.sh && \
+    /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
 # CURRENTLY GREETD NEED TO BE BEFORE WM's
@@ -32,41 +78,31 @@ COPY greetd /tmp/greetd
 WORKDIR /tmp/greetd
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     ./build.sh && \
+    /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
-COPY sway /tmp/sway
-WORKDIR /tmp/sway
-RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
-    ./build.sh && \
-    ostree container commit
+# COPY sway /tmp/sway
+# WORKDIR /tmp/sway
+# RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
+#     ./build.sh && \
+#     /usr/libexec/containerbuild/cleanup.sh && \
+#     ostree container commit
 
 COPY hyprland /tmp/hyprland
 WORKDIR /tmp/hyprland
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     ./build.sh && \
+    /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
 WORKDIR /
 
-COPY build_dev.sh /tmp/build_dev.sh
+COPY build_scripts/build_dev.sh /tmp/build_dev.sh
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     /tmp/build_dev.sh && \
-    ostree container commit
-
-COPY build_base.sh /tmp/build_base.sh
-RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
-    /tmp/build_base.sh && \
+    /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
 # TODO: Cleanup in script
 # TODO: Install flatpaks? Or just add a justfile for this?
-COPY system_files/usr /
-RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
-    rpm-ostree override remove \
-        firefox \
-        firefox-langpacks && \
-    ostree container commit
 
-## NOTES:
-# - All RUN commands must end with ostree container commit
-#   see: https://coreos.github.io/rpm-ostree/container/#using-ostree-container-commit
