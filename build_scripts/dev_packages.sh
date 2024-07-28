@@ -18,10 +18,13 @@ IDE_PACKAGES=(
     devpod
 )
 
+curl -Lo /etc/yum.repos.d/_copr_gmaglione-podman-bootc-fedora-"${RELEASE}".repo https://copr.fedorainfracloud.org/coprs/gmaglione/podman-bootc/repo/fedora-"${RELEASE}"/gmaglione-podman-bootc-fedora-"${RELEASE}".repo
 # Images (Podman, Qemu, Bootc dev)
 IMG_PACKAGES=(
     qemu
     qemu-img
+
+    podman-bootc
 )
 
 rpm-ostree install "${IDE_PACKAGES[@]}" "${IMG_PACKAGES[@]}"
