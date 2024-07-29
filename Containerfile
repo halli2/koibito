@@ -73,6 +73,13 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
+COPY jp /tmp/jp
+WORKDIR /tmp/jp
+RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
+    ./build.sh && \
+    /usr/libexec/containerbuild/cleanup.sh && \
+    ostree container commit
+
 # CURRENTLY GREETD NEED TO BE BEFORE WM's
 COPY greetd /tmp/greetd
 WORKDIR /tmp/greetd
