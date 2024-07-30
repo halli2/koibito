@@ -23,6 +23,7 @@ MULTILIB_PACKAGES=(
   pipewire-libs
   pipewire-pulseaudio
   pipewire-utils
+  pipewire-plugin-libcamera
   bluez
   bluez-obexd
   bluez-cups
