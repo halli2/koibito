@@ -25,4 +25,9 @@ IMG_PACKAGES=(
     podman-bootc
 )
 
+# Rust
+COMMON_DEPENDENCIES=(
+    gcc
+)
+
 rpm-ostree install "${IDE_PACKAGES[@]}" "${IMG_PACKAGES[@]}"
