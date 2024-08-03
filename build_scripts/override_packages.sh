@@ -34,6 +34,7 @@ rpm_override zlib-ng-compat
 rpm_override fontconfig
 rpm_override pciutils-libs
 rpm_override libdrm
+rpm_override libX11 libX11-common libX11-xcb
 
 rpm-ostree override remove \
     glibc32 \
