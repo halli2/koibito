@@ -28,6 +28,7 @@ IMG_PACKAGES=(
 # Rust
 COMMON_DEPENDENCIES=(
     gcc
+    wayland-devel
 )
 
 rpm-ostree install "${IDE_PACKAGES[@]}" "${IMG_PACKAGES[@]}"
