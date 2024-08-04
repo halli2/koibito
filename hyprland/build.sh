@@ -3,7 +3,7 @@
 set -ouex pipefail
 RELEASE="$(rpm -E %fedora)"
 
-echo "start-hyprland" >> "/usr/etc/greetd/environments"
+# echo "start-hyprland" >> "/usr/etc/greetd/environments"
 
 cp -r usr /
 
