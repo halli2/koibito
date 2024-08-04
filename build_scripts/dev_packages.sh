@@ -3,6 +3,7 @@
 set -ouex pipefail
 RELEASE="$(rpm -E %fedora)"
 
+# TODO:
 DEV_PACKAGES=(
     lazygit
 )

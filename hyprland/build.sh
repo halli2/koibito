@@ -10,7 +10,7 @@ cp -r usr /
 curl -Lo /etc/yum.repos.d/solopasha-hyprland-fedora-"${RELEASE}".repo https://copr.fedorainfracloud.org/coprs/solopasha/hyprland/repo/fedora-"${RELEASE}"/solopasha-hyprland-fedora-"${RELEASE}".repo
 
 PACKAGES=(
-    hyprland
+    hyprland-git
     hyprpaper
     grimblast
     xdg-desktop-portal-hyprland
