@@ -3,12 +3,14 @@
 set -ouex pipefail
 RELEASE="$(rpm -E %fedora)"
 
+DEV_PACKAGES=(
+    lazygit
+)
+
 # JetBrains copr
 curl -Lo /etc/yum.repos.d/medzik-jetbrains-fedora-"${RELEASE}".repo https://copr.fedorainfracloud.org/coprs/medzik/jetbrains/repo/fedora-"${RELEASE}"/medzik-jetbrains-fedora-"${RELEASE}".repo
-
 # Devpod
 curl -Lo /etc/yum.repos.d/ublue-os-staging-fedora-"${RELEASE}".repo https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-"${RELEASE}"/ublue-os-staging-fedora-"${RELEASE}".repo
-
 
 IDE_PACKAGES=(
     rustrover
