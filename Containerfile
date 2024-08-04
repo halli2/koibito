@@ -81,12 +81,12 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     ostree container commit
 
 # CURRENTLY GREETD NEED TO BE BEFORE WM's
-COPY greetd /tmp/greetd
-WORKDIR /tmp/greetd
-RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
-    ./build.sh && \
-    /usr/libexec/containerbuild/cleanup.sh && \
-    ostree container commit
+# COPY greetd /tmp/greetd
+# WORKDIR /tmp/greetd
+# RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
+#     ./build.sh && \
+#     /usr/libexec/containerbuild/cleanup.sh && \
+#     ostree container commit
 
 # COPY sway /tmp/sway
 # WORKDIR /tmp/sway
